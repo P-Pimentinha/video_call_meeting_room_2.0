@@ -10,9 +10,13 @@ ul{
 .logo{
     height: 43px;
 }
+
+.navbar{
+    background-color: bisque;
+}
 .navbar-brand{
     font-size: 27px;
-    padding-left: 10px;
+    padding-left: 0px;
     font-family: 'Lato';
 }
 .nav-item a{
