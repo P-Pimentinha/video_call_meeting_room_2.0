@@ -9,6 +9,7 @@ ul{
 }
 .logo{
     height: 43px;
+    padding-left: 20px;
 }
 
 .navbar{
@@ -16,7 +17,7 @@ ul{
 }
 .navbar-brand{
     font-size: 27px;
-    padding-left: 0px;
+    padding-left: 10px;
     font-family: 'Lato';
 }
 .nav-item a{
@@ -32,7 +33,9 @@ ul{
 }
 li.nav-item{
     padding: 0 10px;
+    background-color: rgb(255, 255, 255);
 }
+
 .signin-image{
     height: 390px;
      border: 25px solid white;
