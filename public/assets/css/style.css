@@ -37,9 +37,9 @@ li.nav-item{
 }
 
 .signin-image{
-    height: 390px;
-     border: 25px solid white;
-     border-radius: 5px;
+    height: 350px;
+     border: 20px solid white;
+     border-radius: 15px;
      box-shadow: 1px 1px 5px grey;
 }
 textarea:focus, input:focus{
