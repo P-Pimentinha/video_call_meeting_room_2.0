@@ -11,8 +11,49 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script src="public/Assets/js/jquery-3.4.1.min.js"></script>
   <script src="public/Assets/js/app.js"></script>
+  <!-- <script>
+    $(function(){
+        const urlParams = new URLSearchParams(window.location.search);
+        var meeting_id = urlParams.get('meetingID');
+        var user_id = window.prompt('Enter your userid');
+
+        if(!user_id || !meeting_id){
+            alert('User id or meeting id missing');
+            window.location.href = '/action.html';
+            return;
+        }
+        $("#meetingContainer").show();
+
+        MyApp._init(user_id,meeting_id);
+    })
+</script> -->
 </head>
 <body>
+  <main class="container-fluid d-flex flex-column homewrap">
+    <div class="g-top text-light">
+      <div class="top-remote-video-show-wrap d-flex">
+        <div class="call-wrap" style="background-color: rgb(0, 0, 0);">
+          <div class="video-wrap" id="divUsers" style="display: flex; flex-wrap:wrap">
+            <div id="me" class="userbox display-center flex-column">
+              <h2 class="display center" style="font-size: 14px;">Hello</h2>
+              <div class="display-center">
+                <video autoplay muted id="localVideoPlayer"></video>
+              </div>
+            </div>
+            <div id="otherTemplate" class="userbox display-center flex-column" style="display:none">
+              <h2 class="display center" style="font-size: 14px;"></h2>
+              <div class="display-center">
+                <video autoplay muted></video>
+                <audio autoplay muted controls style="display:none"></audio>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="g-top-left bg-light text-secondary w-25 d-flex align-items-center justify-content-between pl-2 pr-2"></div>
+    </div>
+    <div class="g-bottom"><h6>No</h6></div>
+  </main>
   
 </body>
 </html>
