@@ -49,7 +49,7 @@ textarea:focus, input:focus{
     cursor: pointer;
 }
 .jumbotron{
-    background-color: white;
+    background-color: rgb(143, 130, 130);
 }
 
 /*.......... index page........... */
