@@ -32,6 +32,7 @@
   <main class="container-fluid d-flex flex-column homewrap">
     <div class="g-top text-light">
       <div class="top-remote-video-show-wrap d-flex">
+        <div id="meetingContainer" class="w-75 d-none">
         <div class="call-wrap" style="background-color: rgb(0, 0, 0);">
           <div class="video-wrap" id="divUsers" style="display: flex; flex-wrap:wrap">
             <div id="me" class="userbox display-center flex-column">
@@ -50,9 +51,39 @@
           </div>
         </div>
       </div>
-      <div class="g-top-left bg-light text-secondary w-25 d-flex align-items-center justify-content-between pl-2 pr-2"></div>
+      <div class="g-top-left bg-light text-secondary w-25 d-flex align-items-center justify-content-between pl-2 pr-2">
+        <div class="top-left-participant-wrap pt-2 cursor-pointer">
+          <div class="top-left-participant-icon">
+            <span class="material-icons">people</span> 
+          </div>
+          <div class="top-left-participant-count"></div>
+        </div>
+        <div class="top-left-chat-wrap pt-2 cursor-pointer">
+          <span class="material-icons">message</span> 
+        </div>
+        <div class="top-left-time-wrap"></div>
+      </div>
     </div>
-    <div class="g-bottom"><h6>No</h6></div>
+    </div>
+    <div class="g-bottom bg-light m-0 d-flex justify-content-between align-items-center">
+      <div class="bottom-left d-flex" style="height: 10vh;">
+        <div class="display-center cursor-pointer meeting-details-button">
+          Meeting Details<span class="material-icons">keyboard_arrow_down</span>
+        </div> 
+      </div>
+      <div class="bottom-middle">
+        <div class="mic-toogle-wrap action-icon-style display-center mr-2 cursor-pointer" id="miceMuteUnmute">
+          <span class="material-icons">mic_off</span>
+        </div>
+        <div class="end-call-wrap action-icon-style display-center mr-2 cursor-pointer">
+          <span class="material-icons text-danger">call</span>
+      </div>
+      <div class="video-toggle-wrap action-icon-style display-center cursor-pointer" id="videoCamOnOff">
+        <span class="material-icons" style="width: 100%;">videocam_off</span>
+      </div>
+      </div>
+      <div class="bottom-right"></div>
+    </div>
   </main>
   
 </body>
