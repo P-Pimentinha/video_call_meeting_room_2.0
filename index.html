@@ -60,6 +60,7 @@
                 var join_value = $('.enter-code').val();
                 if (!join_value){
                   $(".enter-code").focus();
+                  alert('Enter the ID of the meeting');
                 }else{
                   var meetingUrl =  window.location.origin+"/action"+"?meetingID="+join_value;
                 window.location.replace(meetingUrl);
