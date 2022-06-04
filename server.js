@@ -1,20 +1,16 @@
 const express = require('express');
 const path = require('path');
-
 const app = express();
 const port = process.env.PORT || 8080;
-
+const io = require("socket.io")(server);
 
 app.use(express.static(path.join(__dirname, "")));
 
-// sendFile will go here
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'));
-});
+require('./startup/routes')(app);
 
-app.get('/action', function(req, res) {
-    res.sendFile(path.join(__dirname, '/action.html'));
+
+
+  var server = app.listen(port, function(err){
+    if (err) console.log("Error in server setup");
+    console.log('Server started at http://localhost:' + port);
   });
-
-app.listen(port);
-console.log('Server started at http://localhost:' + port);
