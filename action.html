@@ -29,7 +29,7 @@
 </script> -->
 </head>
 <body>
-  <main class="container-fluid d-flex flex-column homewrap">
+  <main class="d-flex flex-column home-wrap">
     <div class="g-top text-light">
       <div class="top-remote-video-show-wrap d-flex">
         <div id="meetingContainer" class="w-75 d-none">
@@ -71,7 +71,7 @@
           Meeting Details<span class="material-icons">keyboard_arrow_down</span>
         </div> 
       </div>
-      <div class="bottom-middle">
+      <div class="bottom-middle d-flex justify-content-between align-items-center" style="height: 10vh;">
         <div class="mic-toogle-wrap action-icon-style display-center mr-2 cursor-pointer" id="miceMuteUnmute">
           <span class="material-icons">mic_off</span>
         </div>
@@ -82,7 +82,18 @@
         <span class="material-icons" style="width: 100%;">videocam_off</span>
       </div>
       </div>
-      <div class="bottom-right"></div>
+      <div class="bottom-right d-flex justify-content-center align-items-center mr-3" style="height: 10vh;">
+        <div class="present-now-wrap d-flex justify-content-center flex-column align-items-center mr-5 cursor-pointer">
+          <span class="material-icons">present_to_all</span>
+          <div>Present Now</div>
+        </div>
+        
+        <div class="option-wrap cursor-pointer display-center" style="height: 10vh; position:relative;">
+          <div class="option-icon">
+            <span class="material-icons">more_vert</span>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
   
