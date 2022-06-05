@@ -13,12 +13,7 @@ var server = app.listen(port, function(err){
 const io = require("socket.io")(server);
 
 require('./startup/routes')(app);
-
-
-
-io.on("connection",(socket) => {
-  console.log("socket id// is ", socket.id);
-});
+require('./startup/ioConnection')(io);
 
 
 

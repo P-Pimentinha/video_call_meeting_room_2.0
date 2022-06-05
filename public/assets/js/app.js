@@ -23,7 +23,12 @@ var MyApp = (function(){
                     })
                 }
             }
+        });
+
+        socket.on("inform_others_about_me", function(dat){
+            addUser(data.other_user_id, data.connId);
         })
+
     }
 
     return {
