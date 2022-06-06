@@ -3,6 +3,8 @@ var AppProcess= (function(){
     var peers_connection_ids = [];
     var peers_connection = [];
     var serverProcess;
+    var remote_vid_stream = [];
+    var remote_aud_stream = [];
 
     function _init(SDP_function, my_connid){
         serverprocess = SDP_function;
@@ -34,11 +36,37 @@ var AppProcess= (function(){
         };
 
         connection.ontrack = function(event){
-            
-        };
+           if(!remote_vid_stream[connId]){
+               remote_vid_stream[connId] = new MediaStream();
+           }
+           if(!remote_aud_stream[connId]){
+            remote_aud_stream[connId] = new MediaStream();
+        }
 
+            if(event.track.kind == "video"){
+                remote_vid_stream[connId]
+                .getVideoTracks()
+                .forEach((t)=> remote_vid_stream[connId].removeTrack(t));
+                remote_vid_stream[connId].addTrack(event.track);
+                var remoteVideoPlayer = document.getElementById("v_"+connId);
+                remoteVideoPlayer.srcObject = null;
+                remoteVideoPlayer.srcObject = remote_vid_stream[connId];
+                remoteVideoPlayer.load();
+            }else if(event.track.kind == "audio"){
+                remote_aud_stream[connId]
+                .getAudioTracks()
+                .forEach((t)=> remote_aud_stream[connId].removeTrack(t));
+                remote_aud_stream[connId].addTrack(event.track);
+                var remoteAudioPlayer = document.getElementById("a_"+connId);
+                remoteAudioPlayer.srcObject = null;
+                remoteAudioPlayer.srcObject = remote_aud_stream[connId];
+                remoteAudioPlayer.load();
+            }
+        };
         peers_connection_ids[connId] = connId;
         peers_connection[connId] = connection;
+
+        return connection;
     }
 
     async function setOffer(connId){
