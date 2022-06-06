@@ -20,7 +20,7 @@ module.exports = function(io){
 
           other_users.forEach((v) => {
               socket.to(v.connectionId).emit("inform_others_about_me", {
-                other_iser_id: data.displayName,
+                other_users: data.displayName,
                 connId: socket.id
               })
           })

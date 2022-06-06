@@ -1,6 +1,10 @@
 
 var AppProcess= (function(){
 
+    function _init(SDP_function, my_connid){
+
+    }
+
     var iceConfiguration = {
         iceServers: [
           {
@@ -14,14 +18,28 @@ var AppProcess= (function(){
 
     function setNewConnection(connId){
         var connection = new RTCPeerConnection(iceConfiguration);
+        
+        connection.onnegotiationneeded = async function(event) {
+            await setOffer(connId);
+        }
+
+        connection.onicecandidate = function(event){
+            if(event.candidate){
+                serverProcess(JSON.stringify({icecandidate:event.candidate }), connId)
+            }
+        }
     }
 
 
     return{
         setNewConnection: async function(connId){
             await setNewConnection(connId);
-        }
+        },
+        init: async function(SDP_function, my_connid){
+            await _init(SDP_function, my_connid)
+        },
     }
+
 })();
 
 var MyApp = (function(){
@@ -41,8 +59,9 @@ var MyApp = (function(){
     function event_process_for_signaling_server(){
         socket = io.connect();
         socket.on("connect", () =>{
-            if(socket.connected){
 
+            if(socket.connected){
+                AppProcess.init(SDP_function, socket.id)
                 if(user_id != "" && meeting_id != ""){
                     socket.emit("userconnect", {
                         displayName:user_id,
