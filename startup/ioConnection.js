@@ -25,6 +25,8 @@ module.exports = function(io){
               })
           })
 
+          socket.emit("inform_me_about_other_user")
+
         })
 
         socket.on("SDPProcess", (data) =>{

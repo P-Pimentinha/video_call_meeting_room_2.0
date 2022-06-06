@@ -6,8 +6,8 @@ var AppProcess= (function(){
     var remote_vid_stream = [];
     var remote_aud_stream = [];
 
-    function _init(SDP_function, my_connid){
-        serverprocess = SDP_function;
+    async function _init(SDP_function, my_connid){
+        serverProcess = SDP_function;
         my_connection_id = my_connid;
     }
 
@@ -22,7 +22,7 @@ var AppProcess= (function(){
         ],
       };
 
-    function setNewConnection(connId){
+    async function setNewConnection(connId){
         var connection = new RTCPeerConnection(iceConfiguration);
         
         connection.onnegotiationneeded = async function(event) {
@@ -76,6 +76,30 @@ var AppProcess= (function(){
         serverProcess(JSON.stringify({offer: connection.localDescription }), connId);
     }
 
+    async function SDPProcess (message, from_connid){
+        message = JSON.parse(message);
+        if(message.answer){
+            await peers_connection[from_connid].setRemoteDescription(new RTCSessionDescription(message.answer))
+
+        }else if(message.offer){
+            if(!peers_connection[from_connid]){
+                await setNewConnection(from_connid)
+            }
+            await peers_connection[from_connid].setRemoteDescription(new RTCSessionDescription(message.offer))
+            var answer = await peers_connection[from_connid].createAnswer();
+            await peers_connection[from_connid].setLocalDescription(answer);
+            serverProcess(JSON.stringify({answer: answer }), from_connid);
+        }else if(message.icecandidate){
+            if(!peers_connection[from_connid]){
+                await setNewConnection(from_connid);
+            }
+            try{
+                peers_connection[from_connid].addIceCandidate(message.icecandidate);
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
 
     return{
         setNewConnection: async function(connId){
@@ -84,7 +108,7 @@ var AppProcess= (function(){
         init: async function(SDP_function, my_connid){
             await _init(SDP_function, my_connid)
         },
-        processClientFunc: async function(SDP_function, my_connid){
+        processClientFunc: async function(data, from_connid){
             await SDPProcess(data, from_connid)
         },
     }
