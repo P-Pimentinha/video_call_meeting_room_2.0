@@ -1,8 +1,12 @@
 
 var AppProcess= (function(){
+    var peers_connection_ids = [];
+    var peers_connection = [];
+    var serverProcess;
 
     function _init(SDP_function, my_connid){
-
+        serverprocess = SDP_function;
+        my_connection_id = my_connid;
     }
 
     var iceConfiguration = {
@@ -21,13 +25,27 @@ var AppProcess= (function(){
         
         connection.onnegotiationneeded = async function(event) {
             await setOffer(connId);
-        }
+        };
 
         connection.onicecandidate = function(event){
             if(event.candidate){
-                serverProcess(JSON.stringify({icecandidate:event.candidate }), connId)
+                serverProcess(JSON.stringify({icecandidate:event.candidate }), connId);
             }
-        }
+        };
+
+        connection.ontrack = function(event){
+            
+        };
+
+        peers_connection_ids[connId] = connId;
+        peers_connection[connId] = connection;
+    }
+
+    async function setOffer(connId){
+        var connection = peers_connection[connId];
+        var offer = await connection.createOffer();
+        await connection.setLocalDescription(offer);
+        serverProcess(JSON.stringify({offer: connection.localDescription }), connId);
     }
 
 
@@ -58,8 +76,15 @@ var MyApp = (function(){
     
     function event_process_for_signaling_server(){
         socket = io.connect();
-        socket.on("connect", () =>{
 
+        var SDP_function = function(data, to_connid){
+            socket.emit("SDPProcess", {
+                message: data,
+                to_connid: to_connid,
+            })
+        }
+
+        socket.on("connect", () =>{
             if(socket.connected){
                 AppProcess.init(SDP_function, socket.id)
                 if(user_id != "" && meeting_id != ""){
