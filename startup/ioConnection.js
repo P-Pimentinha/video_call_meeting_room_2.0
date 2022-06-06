@@ -17,7 +17,7 @@ module.exports = function(io){
               user_id: data.displayName,
               meeting_id: data.meetingid,
           })
-
+          
           other_users.forEach((v) => {
               socket.to(v.connectionId).emit("inform_others_about_me", {
                 other_users: data.displayName,
@@ -25,7 +25,7 @@ module.exports = function(io){
               })
           })
 
-          socket.emit("inform_me_about_other_user")
+          socket.emit("inform_me_about_other_user", other_users);
 
         })
 
