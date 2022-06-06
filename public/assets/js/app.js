@@ -84,8 +84,10 @@ var AppProcess= (function(){
         init: async function(SDP_function, my_connid){
             await _init(SDP_function, my_connid)
         },
+        processClientFunc: async function(SDP_function, my_connid){
+            await SDPProcess(data, from_connid)
+        },
     }
-
 })();
 
 var MyApp = (function(){
@@ -127,6 +129,9 @@ var MyApp = (function(){
         socket.on("inform_others_about_me", function(data){
             addUser(data.other_user_id, data.connId);
             AppProcess.setNewConnection(data.connId);
+        })
+        socket.on("SDPProcess", async function(data){
+           await AppProcess.processClientFunc(data.message, data.from_connid) 
         })
 
     }
