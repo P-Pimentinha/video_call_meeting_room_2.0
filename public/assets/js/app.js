@@ -5,10 +5,93 @@ var AppProcess= (function(){
     var serverProcess;
     var remote_vid_stream = [];
     var remote_aud_stream = [];
+    var local_div;
+    var audio;
+    var isAudioMute = true;
+    var rtp_aud_senders = [];
+    var video_states = {
+        None:0,
+        Camera:1,
+        ScreenShare:2
+    }
+    var video_st = video_states.None;
+    var videoCamTrack;
 
     async function _init(SDP_function, my_connid){
         serverProcess = SDP_function;
         my_connection_id = my_connid;
+        eventProcess();
+        local_div = document.getElementById("localVideoPlayer");
+    }
+
+    function eventProcess() {
+        $("#miceMuteUnmute").on("click", async function(){
+            if(!audio){
+                await loadAudio();
+            }
+            if(!audio){
+                alert("Audio permission was not granted");
+                return
+            }
+            if(isAudioMute){
+                audio.enable = true;
+                $(this).html("<span class='material-icons'>mic</span>");
+                updateMediaSenders(audio, rtp_aud_senders);
+            }else{
+                audio.enable = false;
+                $(this).html("<span class='material-icons'>mic_off</span>");
+                removeMediaSenders(rtp_aud_senders);
+            }
+            isAudioMute = !isAudioMute;
+        });
+
+        $("#videoCamOnOff").on("click", async function(){
+            if(video_st == video_states.Camera){
+                await videoProcess(video_states.None);
+            }else{
+                await videoProcess(video_states.Camera);
+            }
+        });
+
+        $("#ScreenShareOnOff").on("click", async function(){
+            if(video_st == video_states.ScreenShare){
+                await videoProcess(video_states.None);
+            }else{
+                await videoProcess(video_states.ScreenShareOnOff);
+            }
+        })
+    }
+
+    async function videoProcess(newVideoState){
+        try{
+            var vstream = null;
+            if(newVideoState == video_states.Camera){
+               vstream = await navigator.mediaDevices.getUserMedia({
+                    video:{
+                        width:1920,
+                        height: 1080
+                    },
+                   audio: false 
+                })
+            }else if(newVideoState == video_states.ScreenShare){
+                vstream = await navigator.mediaDevices.getDisplayMedia({
+                    video:{
+                        width:1920,
+                        height: 1080
+                    },
+                   audio: false 
+                });
+            }
+            if(vstream && vstream.getVideoTracks().length > 0){
+                videoCamTrack = vstream.getVideoTracks()[0];
+                if(videoCamTrack){
+                   local_div.srcObject = new MediaStream([videoCamTrack]); 
+                }
+            }
+        }catch(e){
+            console.log(e);
+        }
+        video_st = newVideoState; 
     }
 
     var iceConfiguration = {
