@@ -1,8 +1,9 @@
 
-var userConnections = [];
+ var userConnections = [];
 
 module.exports = function(io){
 
+ 
     io.on("connection",(socket) => {
         console.log("socket id// is ", socket.id);
         socket.on("userconnect", (data) => {
@@ -17,11 +18,14 @@ module.exports = function(io){
               user_id: data.displayName,
               meeting_id: data.meetingid,
           })
+
+          
           
           other_users.forEach((v) => {
               socket.to(v.connectionId).emit("inform_others_about_me", {
                 other_users: data.displayName,
                 connId: socket.id
+                
               })
           })
 
@@ -29,12 +33,13 @@ module.exports = function(io){
 
         })
 
-        socket.on("SDPProcess", (data) =>{
-          socket.to(data.to_connid).emit("SDPProcess",{
+        socket.on("SDPProcess", (data) => {
+          socket.to(data.to_connid).emit("SDPProcess", {
             message: data.message,
             from_connid: socket.id,
-          })
-        })
+          });
+        });
+        
 
       });
       
