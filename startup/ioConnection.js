@@ -1,5 +1,5 @@
 
- var userConnections = [];
+var userConnections = [];
 
 module.exports = function(io){
 

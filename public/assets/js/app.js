@@ -16,6 +16,7 @@ var AppProcess= (function(){
     }
     var video_st = video_states.None;
     var videoCamTrack;
+    var rtp_vid_senders = [];
 
     async function _init(SDP_function, my_connid){
         serverProcess = SDP_function;
@@ -62,6 +63,26 @@ var AppProcess= (function(){
         })
     }
 
+    function connection_status(connection){
+        if(connection && (connection.connectionState == "new" || connection.connectionState == "connecting" || connection.connectionState == "connected" )){
+            return true
+        }else{
+            return false;
+        }
+    }
+
+    async function updateMediaSenders(track, rtp_senders) {
+        for (var con_id in peers_connection_ids) {
+          if (connection_status(peers_connection[con_id])) {
+            if (rtp_senders[con_id] && rtp_senders[con_id].track) {
+              rtp_senders[con_id].replaceTrack(track);
+            } else {
+              rtp_senders[con_id] = peers_connection[con_id].addTrack(track);
+            }
+          }
+        }
+      }
+
     async function videoProcess(newVideoState){
         try{
             var vstream = null;
@@ -87,7 +108,7 @@ var AppProcess= (function(){
                 if(videoCamTrack){
                    local_div.srcObject = new MediaStream([videoCamTrack]);
                    $("#meetingContainer").show();
-                   alert ("I am working")
+                   updateMediaSenders(videoCamTrack, rtp_vid_senders);
                 }
             }
         }catch(e){
@@ -150,6 +171,13 @@ var AppProcess= (function(){
         };
         peers_connection_ids[connId] = connId;
         peers_connection[connId] = connection;
+
+        if(video_st == video_states.Camera || video_states.ScreenShare){
+            if(videoCamTrack){
+                updateMediaSenders(videoCamTrack, rtp_vid_senders)
+            }  
+        }
+        
 
         return connection;
     }
