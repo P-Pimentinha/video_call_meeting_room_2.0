@@ -35,12 +35,12 @@ var AppProcess= (function(){
                 return
             }
             if(isAudioMute){
-                audio.enable = true;
-                $(this).html("<span class='material-icons'>mic</span>");
+                audio.enabled = true;
+                $(this).html( "<span class='material-icons' style='width:100%;'>mic</span>");
                 updateMediaSenders(audio, rtp_aud_senders);
             }else{
-                audio.enable = false;
-                $(this).html("<span class='material-icons'>mic_off</span>");
+                audio.enabled = false;
+                $(this).html( "<span class='material-icons' style='width:100%;'>mic_off</span>");
                 removeMediaSenders(rtp_aud_senders);
             }
             isAudioMute = !isAudioMute;
@@ -63,6 +63,19 @@ var AppProcess= (function(){
         })
     }
 
+    async function loadAudio() {
+        try {
+          var astream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true,
+          });
+          audio = astream.getAudioTracks()[0];
+          audio.enabled = false;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     function connection_status(connection){
         if(connection && (connection.connectionState == "new" || connection.connectionState == "connecting" || connection.connectionState == "connected" )){
             return true
@@ -71,7 +84,7 @@ var AppProcess= (function(){
         }
     }
 
-    async function updateMediaSenders(track, rtp_senders) {
+    async function updateMediaSenders(track, rtp_senders) { 
         for (var con_id in peers_connection_ids) {
           if (connection_status(peers_connection[con_id])) {
             if (rtp_senders[con_id] && rtp_senders[con_id].track) {
@@ -83,7 +96,37 @@ var AppProcess= (function(){
         }
       }
 
+      function removeMediaSenders(rtp_senders) {
+        console.log("rtp_senders :", rtp_senders);
+        for (var con_id in peers_connection_ids) {
+          if (rtp_senders[con_id] && connection_status(peers_connection[con_id])) {
+            peers_connection[con_id].removeTrack(rtp_senders[con_id]);
+            rtp_senders[con_id] = null;
+          }
+        }
+      }
+
+    async function removeVideoStream(rtp_vid_senders){
+        if(videoCamTrack){
+            videoCamTrack.stop();
+            videoCamTrack = null;
+            local_div.srcObject = null;
+            removeMediaSenders(rtp_vid_senders);
+        }
+    }
+
     async function videoProcess(newVideoState){
+        if(newVideoState ==  video_states.None) {
+            $('#videoCamOnOff').html("<span class='material-icons' style='width: 100%;'>videocam_off</span>");
+            video_st = newVideoState;
+
+            removeVideoStream(rtp_vid_senders);
+            return;
+
+        }
+        if(newVideoState ==  video_states.Camera) {
+            $('#videoCamOnOff').html("<span class='material-icons' style='width: 100%;'>videocam</span>");
+        }
         try{
             var vstream = null;
             if(newVideoState == video_states.Camera){
@@ -158,12 +201,12 @@ var AppProcess= (function(){
                 remoteVideoPlayer.srcObject = null;
                 remoteVideoPlayer.srcObject = remote_vid_stream[connId];
                 remoteVideoPlayer.load();
-            }else if(event.track.kind == "audio"){
+            }else if (event.track.kind == "audio") {
                 remote_aud_stream[connId]
-                .getAudioTracks()
-                .forEach((t)=> remote_aud_stream[connId].removeTrack(t));
+                  .getAudioTracks()
+                  .forEach((t) => remote_aud_stream[connId].removeTrack(t));
                 remote_aud_stream[connId].addTrack(event.track);
-                var remoteAudioPlayer = document.getElementById("a_"+connId);
+                var remoteAudioPlayer = document.getElementById("a_" + connId);
                 remoteAudioPlayer.srcObject = null;
                 remoteAudioPlayer.srcObject = remote_aud_stream[connId];
                 remoteAudioPlayer.load();
@@ -171,7 +214,7 @@ var AppProcess= (function(){
         };
         peers_connection_ids[connId] = connId;
         peers_connection[connId] = connection;
-
+        console.log("PEEEERRR" + peers_connection_ids[connId] );
         if(video_st == video_states.Camera || video_states.ScreenShare){
             if(videoCamTrack){
                 updateMediaSenders(videoCamTrack, rtp_vid_senders)
