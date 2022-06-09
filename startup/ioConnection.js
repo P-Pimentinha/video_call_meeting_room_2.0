@@ -1,3 +1,4 @@
+const { Socket } = require("socket.io");
 
 var userConnections = [];
 
@@ -39,6 +40,21 @@ module.exports = function(io){
             from_connid: socket.id,
           });
         });
+
+        socket.on("disconnect", function(){
+          console.log("User Got Disconnected")
+          var disUser = userConnections.find((p) => p.connectionId == socket.id);
+          if(disUser){
+            var meetinid = disUser.meeting_id;
+            userConnections = userConnections.filter((p)=>p.connectionId != socket.id);
+            var list = userConnections.fill((p) => p.meeting_id == meetinid);
+            list.forEach((v)=>{
+              socket.to(v.connectionId).emit("inform_about_connection_end", {
+                connId: socket.id,
+              })
+            })
+          }
+        })
         
 
       });
