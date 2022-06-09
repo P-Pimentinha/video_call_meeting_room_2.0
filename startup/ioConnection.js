@@ -47,9 +47,9 @@ module.exports = function(io){
           if(disUser){
             var meetinid = disUser.meeting_id;
             userConnections = userConnections.filter((p)=>p.connectionId != socket.id);
-            var list = userConnections.fill((p) => p.meeting_id == meetinid);
+            var list = userConnections.filter((p) => p.meeting_id == meetinid);
             list.forEach((v)=>{
-              socket.to(v.connectionId).emit("inform_about_connection_end", {
+              socket.to(v.connectionId).emit("inform_other_about_disconnected_user", {
                 connId: socket.id,
               })
             })

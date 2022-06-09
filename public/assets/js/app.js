@@ -257,6 +257,26 @@ var AppProcess= (function(){
         }
     }
 
+    async function _closeConnection(connid) {
+      peers_connection_ids[connid] = null;
+      if (peers_connection[connid]) {
+        peers_connection[connid].close();
+        peers_connection[connid] = null;
+      }
+      if (remote_aud_stream[connid]) {
+        remote_aud_stream[connid].getTracks().forEach((t) => {
+          if (t.stop) t.stop();
+        });
+        remote_aud_stream[connid] = null;
+      }
+      if (remote_vid_stream[connid]) {
+        remote_vid_stream[connid].getTracks().forEach((t) => {
+          if (t.stop) t.stop();
+        });
+        remote_vid_stream[connid] = null;
+      }
+    }
+
     return{
         setNewConnection: async function(connId){
             await setNewConnection(connId);
@@ -267,6 +287,9 @@ var AppProcess= (function(){
         processClientFunc: async function(data, from_connid){
             await SDPProcess(data, from_connid)
         },
+        closeConnectionCall: async function(connId){
+          await _closeConnection(connId)
+        }
     }
 })();
 
@@ -309,49 +332,16 @@ var MyApp = (function(){
     });
     socket.on("inform_other_about_disconnected_user", function (data) {
       $("#" + data.connId).remove();
-      $(".participant-count").text(data.uNumber);
-      $("#participant_" + data.connId + "").remove();
       AppProcess.closeConnectionCall(data.connId);
     });
-    // <!-- .....................HandRaise .................-->
-
-    socket.on("HandRaise_info_for_others", function (data) {
-      if (data.handRaise) {
-        $("#hand_" + data.connId).show();
-      } else {
-        $("#hand_" + data.connId).hide();
-      }
-    });
-    // <!-- .....................HandRaise .................-->
+  
 
     socket.on("inform_others_about_me", function (data) {
       addUser(data.other_user_id, data.connId, data.userNumber);
 
       AppProcess.setNewConnection(data.connId);
     });
-    socket.on("showFileMessage", function (data) {
-      var num_of_att = $(".left-align").length;
-      var added_mar = num_of_att * 10;
-      var mar_top = "-" + (135 + added_mar);
-      $(".g-details").css({ "margin-top": mar_top });
-
-      var time = new Date();
-      var lTime = time.toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      });
-      var attachFileAreaForOther = document.querySelector(".show-attach-file");
-
-      attachFileAreaForOther.innerHTML +=
-        "<div class='left-align' style='display:flex; align-items:center;'><img src='public/assets/images/other.jpg' style='height:40px;width:40px;' class='caller-image circle'><div style='font-weight:600;margin:0 5px;'>" +
-        data.username +
-        "</div>:<div><a style='color:#007bff;' href='" +
-        data.filePath +
-        "' download>" +
-        data.fileName +
-        "</a></div></div><br/>";
-    });
+    
     socket.on("inform_me_about_other_user", function (other_users) {
       var userNumber = other_users.length;
       var userNumb = userNumber + 1;
@@ -369,23 +359,7 @@ var MyApp = (function(){
     socket.on("SDPProcess", async function (data) {
       await AppProcess.processClientFunc(data.message, data.from_connid);
     });
-    socket.on("showChatMessage", function (data) {
-      var time = new Date();
-      var lTime = time.toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      });
-      var div = $("<div>").html(
-        "<span class='font-weight-bold mr-3' style='color:black'>" +
-          data.from +
-          "</span>" +
-          lTime +
-          "</br>" +
-          data.message
-      );
-      $("#messages").append(div);
-    });
+    
   }
 
     function addUser (other_user_id, connId) {
