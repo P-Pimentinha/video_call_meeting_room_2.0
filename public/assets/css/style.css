@@ -13,13 +13,9 @@ ul{
 }
 
 .navbar{
-    background-color: bisque;
+    background-color: rgb(255, 255, 255);
 }
-.navbar-brand{
-    font-size: 27px;
-    padding-left: 10px;
-    font-family: 'Lato';
-}
+
 .nav-item a{
     color: gray !important;
     font-size: 16px;
@@ -36,6 +32,12 @@ li.nav-item{
     background-color: rgb(255, 255, 255);
 }
 
+.join-action{
+    margin-left: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+}
+
 .signin-image{
     height: 350px;
      border: 20px solid white;
@@ -49,10 +51,13 @@ textarea:focus, input:focus{
     cursor: pointer;
 }
 .jumbotron{
-    background-color: rgb(143, 130, 130);
+    background-color: rgb(255, 255, 255);
 }
 
-/*.......... action page........... */
+.code-enter {
+    margin-top: 5px;
+}
+
 .home-wrap{
     background-color: rgb(31,30,30);
 }
