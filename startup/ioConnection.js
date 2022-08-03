@@ -6,7 +6,7 @@ module.exports = function(io){
 
  
     io.on("connection",(socket) => {
-        console.log("socket id// is ", socket.id);
+        console.log("socket id:", socket.id);
         socket.on("userconnect", (data) => {
 
         console.log("userconnect", data.displayName, data.meetingid);
